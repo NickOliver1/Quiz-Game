@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Optional: basic styling hook -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main id="app">
+
+    <!-- START SCREEN -->
+    <section id="start-screen">
+      <h1>Quiz Game</h1>
+      <p>
+        Test your knowledge by answering a series of multiple-choice questions.
+        Select the best answer and submit to continue.
+      </p>
+      <button id="start-button">Start Quiz</button>
+    </section>
+
+    <!-- QUESTION SCREEN -->
+    <section id="question-screen" hidden>
+      <h2 id="question-number">Question 1</h2>
+
+      <form id="quiz-form">
+        <fieldset>
+          <legend id="question-text">
+            Question text will go here
+          </legend>
+
+          <!-- Answer choices will be injected here by JavaScript -->
+          <div id="answer-choices"></div>
+        </fieldset>
+
+        <button type="submit" id="submit-button">
+          Submit Answer
+        </button>
+      </form>
+
+      <!-- Feedback area -->
+      <p id="feedback" aria-live="polite"></p>
+
+      <button id="next-button" hidden>
+        Next Question
+      </button>
+    </section>
+
+    <!-- RESULTS SCREEN -->
+    <section id="results-screen" hidden>
+      <h2>Quiz Complete</h2>
+      <p id="final-score">
+        Your score will appear here.
+      </p>
+
+      <button id="restart-button">
+        Play Again
+      </button>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
