@@ -3,6 +3,9 @@
 const questionNumberEl = document.getElementById('question-number');
 const questionTextEl = document.getElementById('question-text');
 const answerChoicesEl = document.getElementById('answer-choices');
+const quizFormEl = document.getElementById('quiz-form');
+const feedbackEl = document.getElementById('feedback');
+const nextButtonEl = document.getElementById('next-button');
 
 console.log(questionNumberEl, questionTextEl, answerChoicesEl);
 const startScreenEl = document.getElementById('start-screen');
