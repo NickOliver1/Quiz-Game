@@ -4,6 +4,7 @@ const questionNumberEl = document.getElementById('question-number');
 const questionTextEl = document.getElementById('question-text');
 const answerChoicesEl = document.getElementById('answer-choices');
 const quizFormEl = document.getElementById('quiz-form');
+
 const feedbackEl = document.getElementById('feedback');
 const nextButtonEl = document.getElementById('next-button');
 
@@ -12,12 +13,25 @@ const startScreenEl = document.getElementById('start-screen');
 const questionScreenEl = document.getElementById('question-screen');
 const startButtonEl = document.getElementById('start-button');
 
-const question1 = {
-  prompt: 'Which HTML element is best for the main heading of a page?',
-  choices: ['<p>', '<h1>', '<div>', '<span>'],
-  answerIndex: 1
-};
-
+const questions = [
+  {
+    prompt: 'Which HTML element is best for the main heading of a page?',
+    choices: ['<p>', '<h1>', '<div>', '<span>'],
+    answerIndex: 1
+  },
+  {
+    prompt: 'Which tag is used to create a hyperlink?',
+    choices: ['<link>', '<a>', '<href>', '<nav>'],
+    answerIndex: 1
+  },
+  {
+    prompt: 'Which language runs in the browser?',
+    choices: ['Java', 'C++', 'JavaScript', 'Python'],
+    answerIndex: 2
+  }
+];
+let currentQuestionIndex = 0;
+let score = 0;
 function renderQuestion(question, number) {
   // 1) Update question number label
   questionNumberEl.textContent = `Question ${number}`;
@@ -53,8 +67,8 @@ function renderQuestion(question, number) {
   });
 }
 
-renderQuestion(question1, 1);
 startButtonEl.addEventListener('click', () => {
   startScreenEl.hidden = true;     // hide start screen
   questionScreenEl.hidden = false; // show question screen
+  renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
 });
