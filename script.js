@@ -72,3 +72,20 @@ startButtonEl.addEventListener('click', () => {
   questionScreenEl.hidden = false; // show question screen
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
 });
+quizFormEl.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(quizFormEl);
+  const selected = Number(formData.get('answer'));
+
+  const correct = questions[currentQuestionIndex].answerIndex;
+
+  if (selected === correct) {
+    feedbackEl.textContent = "Correct!";
+    score++;
+  } else {
+    feedbackEl.textContent = "Incorrect.";
+  }
+
+  nextButtonEl.hidden = false;
+});
