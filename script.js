@@ -76,7 +76,7 @@ quizFormEl.addEventListener('submit', (event) => {
   event.preventDefault();
 
   const formData = new FormData(quizFormEl);
-  const selected = Number(formData.get('answer'));
+   const selected = Number(formData.get('answer'));
 
   const correct = questions[currentQuestionIndex].answerIndex;
 
@@ -88,4 +88,20 @@ quizFormEl.addEventListener('submit', (event) => {
   }
 
   nextButtonEl.hidden = false;
+});
+nextButtonEl.addEventListener('click', () => {
+  currentQuestionIndex++;
+
+  feedbackEl.textContent = '';
+  nextButtonEl.hidden = true;
+  quizFormEl.reset();
+
+  if (currentQuestionIndex < questions.length) {
+    renderQuestion(
+      questions[currentQuestionIndex],
+      currentQuestionIndex + 1
+    );
+  } else {
+    showResults();
+  }
 });
