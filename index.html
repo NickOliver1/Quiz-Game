@@ -27,10 +27,11 @@
       <h2 id="question-number">Question 1</h2>
 
       <form id="quiz-form">
-        <fieldset>
-          <legend id="question-text">
+        <fieldset aria_labeledby=""question-text">
+
+      <p id="question-text">
             Question text will go here
-          </legend>
+      </p>
 
           <!-- Answer choices will be injected here by JavaScript -->
           <div id="answer-choices"></div>
@@ -47,6 +48,9 @@
       <button id="next-button" hidden>
         Next Question
       </button>
+    <div role="region" aria-label="timer">
+    <p id="timer">15</p>  
+    </div>
     </section>
 
     <!-- RESULTS SCREEN -->

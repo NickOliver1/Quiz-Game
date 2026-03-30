@@ -7,7 +7,7 @@ const quizFormEl = document.getElementById('quiz-form');
 
 const feedbackEl = document.getElementById('feedback');
 const nextButtonEl = document.getElementById('next-button');
-
+const timerEl = document.getElementById("timer");
 console.log(questionNumberEl, questionTextEl, answerChoicesEl);
 const startScreenEl = document.getElementById('start-screen');
 const questionScreenEl = document.getElementById('question-screen');
@@ -32,6 +32,22 @@ const questions = [
 ];
 let currentQuestionIndex = 0;
 let score = 0;
+let timeLeft = 30;
+let timerInterval = null;
+function startTimer() {
+  clearInterval(timerInterval); // safety clear
+  
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = `Time: ${timeLeft}s`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      feedbackEl.textContent = "Time's up!";
+      nextButtonEl.hidden = false;
+    }
+  }, 1000);
+}
 function renderQuestion(question, number) {
   // 1) Update question number label
   questionNumberEl.textContent = `Question ${number}`;
@@ -65,6 +81,7 @@ function renderQuestion(question, number) {
     optionDiv.appendChild(label);
     answerChoicesEl.appendChild(optionDiv);
   });
+startTimer();
 }
 
 startButtonEl.addEventListener('click', () => {
@@ -74,7 +91,11 @@ startButtonEl.addEventListener('click', () => {
 });
 quizFormEl.addEventListener('submit', (event) => {
   event.preventDefault();
-
+  
+if (!quizFormEl.checkValidity()) {
+    feedbackEl.textContent = "Please select an answer!";
+  return;
+}  
   const formData = new FormData(quizFormEl);
    const selected = Number(formData.get('answer'));
 
@@ -104,4 +125,25 @@ nextButtonEl.addEventListener('click', () => {
   } else {
     showResults();
   }
+});
+function showResults() {
+  questionScreenEl.hidden = true;
+
+  const resultsScreenEl = document.getElementById('results-screen');
+  resultsScreenEl.hidden = false;
+
+  const finalScoreEl = document.getElementById('final-score');
+  finalScoreEl.textContent = `You scored ${score} out of ${questions.length}!`;
+}
+const restartButtonEl = document.getElementById('restart-button');
+
+restartButtonEl.addEventListener('click', () => {
+  const resultsScreenEl = document.getElementById('results-screen');
+  resultsScreenEl.hidden = true;
+
+  score = 0;
+  currentQuestionIndex = 0;
+
+  questionScreenEl.hidden = false;
+  renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
 });
