@@ -12,6 +12,8 @@ console.log(questionNumberEl, questionTextEl, answerChoicesEl);
 const startScreenEl = document.getElementById('start-screen');
 const questionScreenEl = document.getElementById('question-screen');
 const startButtonEl = document.getElementById('start-button');
+const dialogEl = document.getElementById('timer-warning');
+const dialogCancelEl = document.getElementById('dialog-cancel');
 
 const questions = [
   {
@@ -44,7 +46,8 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       feedbackEl.textContent = "Time's up!";
-      nextButtonEl.hidden = false;
+      showResults();
+      timeLeft = 30;
     }
   }, 1000);
 }
@@ -60,7 +63,7 @@ function renderQuestion(question, number) {
 
   // 4) Create one radio + label per choice
   question.choices.forEach((choiceText, index) => {
-    // Create a wrapper so each option is on its own line
+   // Create a wrapper so each option is on its own line
     const optionDiv = document.createElement('div');
 
     // Create the radio input
@@ -81,13 +84,21 @@ function renderQuestion(question, number) {
     optionDiv.appendChild(label);
     answerChoicesEl.appendChild(optionDiv);
   });
-startTimer();
 }
 
 startButtonEl.addEventListener('click', () => {
-  startScreenEl.hidden = true;     // hide start screen
-  questionScreenEl.hidden = false; // show question screen
+  dialogEl.showModal();  
+  dialogConfirmEl.addEventListener('click', () => {
+  dialogEl.close();                    // close the dialog
+  startScreenEl.hidden = true;         // hide start screen
+  questionScreenEl.hidden = false;     // show question screen
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
+  startTimer();                        // global timer begins!
+});
+
+dialogCancelEl.addEventListener('click', () => {
+  dialogEl.close(); // just dismiss, start screen stays visible
+});
 });
 quizFormEl.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -146,4 +157,5 @@ restartButtonEl.addEventListener('click', () => {
 
   questionScreenEl.hidden = false;
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
+startTimer();
 });
