@@ -33,9 +33,10 @@ const questions = [
     answerIndex: 2
   }
 ];
+const QUESTION_TIME = 20;
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 90;
+let timeLeft = QUESTION_TIME;
 timerEl.textContent = `Time: ${timeLeft}s`;
 let timerInterval = null;
 function startTimer() {
@@ -48,8 +49,11 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       feedbackEl.textContent = "Time's up!";
-      showResults();
-      timeLeft = 30;
+      nextButtonEl.hidden = false;
+      // If this was the last question, show full results
+      if (currentQuestionIndex >= questions.length - 1) {
+        showResults();
+      }
     }
   }, 1000);
 }
@@ -86,6 +90,13 @@ function renderQuestion(question, number) {
     optionDiv.appendChild(label);
     answerChoicesEl.appendChild(optionDiv);
   });
+
+  // Reset feedback and start the per-question timer
+  feedbackEl.textContent = '';
+  nextButtonEl.hidden = true;
+  timeLeft = QUESTION_TIME;
+  timerEl.textContent = `Time: ${timeLeft}s`;
+  startTimer();
 }
 
 startButtonEl.addEventListener('click', () => {
@@ -121,7 +132,9 @@ if (!quizFormEl.checkValidity()) {
     feedbackEl.textContent = "Incorrect.";
   }
 
-  nextButtonEl.hidden = false;
+    // stop this question's timer and reveal next
+    clearInterval(timerInterval);
+    nextButtonEl.hidden = false;
 });
 nextButtonEl.addEventListener('click', () => {
   currentQuestionIndex++;
@@ -159,5 +172,4 @@ restartButtonEl.addEventListener('click', () => {
 
   questionScreenEl.hidden = false;
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
-startTimer();
 });
