@@ -14,6 +14,7 @@ const questionScreenEl = document.getElementById('question-screen');
 const startButtonEl = document.getElementById('start-button');
 const dialogEl = document.getElementById('timer-warning');
 const dialogCancelEl = document.getElementById('dialog-cancel');
+const dialogConfirmEl = document.getElementById('dialog-confirm');
 
 const questions = [
   {
@@ -32,9 +33,11 @@ const questions = [
     answerIndex: 2
   }
 ];
+const QUESTION_TIME = 20;
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 30;
+let timeLeft = QUESTION_TIME;
+timerEl.textContent = `Time: ${timeLeft}s`;
 let timerInterval = null;
 function startTimer() {
   clearInterval(timerInterval); // safety clear
@@ -46,8 +49,11 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       feedbackEl.textContent = "Time's up!";
-      showResults();
-      timeLeft = 30;
+      nextButtonEl.hidden = false;
+      // If this was the last question, show full results
+      if (currentQuestionIndex >= questions.length - 1) {
+        showResults();
+      }
     }
   }, 1000);
 }
@@ -84,6 +90,13 @@ function renderQuestion(question, number) {
     optionDiv.appendChild(label);
     answerChoicesEl.appendChild(optionDiv);
   });
+
+  // Reset feedback and start the per-question timer
+  feedbackEl.textContent = '';
+  nextButtonEl.hidden = true;
+  timeLeft = QUESTION_TIME;
+  timerEl.textContent = `Time: ${timeLeft}s`;
+  startTimer();
 }
 
 startButtonEl.addEventListener('click', () => {
@@ -105,7 +118,7 @@ quizFormEl.addEventListener('submit', (event) => {
   
 if (!quizFormEl.checkValidity()) {
     feedbackEl.textContent = "Please select an answer!";
-  return;
+   return;
 }  
   const formData = new FormData(quizFormEl);
    const selected = Number(formData.get('answer'));
@@ -119,7 +132,9 @@ if (!quizFormEl.checkValidity()) {
     feedbackEl.textContent = "Incorrect.";
   }
 
-  nextButtonEl.hidden = false;
+    // stop this question's timer and reveal next
+    clearInterval(timerInterval);
+    nextButtonEl.hidden = false;
 });
 nextButtonEl.addEventListener('click', () => {
   currentQuestionIndex++;
@@ -157,5 +172,4 @@ restartButtonEl.addEventListener('click', () => {
 
   questionScreenEl.hidden = false;
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
-startTimer();
 });
