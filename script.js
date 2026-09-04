@@ -14,6 +14,7 @@ const questionScreenEl = document.getElementById('question-screen');
 const startButtonEl = document.getElementById('start-button');
 const dialogEl = document.getElementById('timer-warning');
 const dialogCancelEl = document.getElementById('dialog-cancel');
+const dialogConfirmEl = document.getElementById('dialog-confirm');
 
 const questions = [
   {
@@ -34,7 +35,8 @@ const questions = [
 ];
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 30;
+let timeLeft = 90;
+timerEl.textContent = `Time: ${timeLeft}s`;
 let timerInterval = null;
 function startTimer() {
   clearInterval(timerInterval); // safety clear
