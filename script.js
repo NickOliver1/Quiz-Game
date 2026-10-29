@@ -8,6 +8,8 @@ const quizFormEl = document.getElementById('quiz-form');
 const feedbackEl = document.getElementById('feedback');
 const nextButtonEl = document.getElementById('next-button');
 const timerEl = document.getElementById("timer");
+const dialogConfirmEl = document.getElementById("dialog-confirm");
+const submitEl = document.getElementById("submit-button");
 console.log(questionNumberEl, questionTextEl, answerChoicesEl);
 const startScreenEl = document.getElementById('start-screen');
 const questionScreenEl = document.getElementById('question-screen');
@@ -34,20 +36,24 @@ const questions = [
 ];
 let currentQuestionIndex = 0;
 let score = 0;
-let timeLeft = 30;
+let timeLeft = 90;
 let timerInterval = null;
+let answered = false;
+
+// Let the question heading receive focus from code (not from Tab)
+questionNumberEl.tabIndex = -1;
+
 function startTimer() {
   clearInterval(timerInterval); // safety clear
-  
+  timeLeft = 90;
+  timerEl.textContent = `Time: ${timeLeft}s`;
+
   timerInterval = setInterval(() => {
     timeLeft--;
     timerEl.textContent = `Time: ${timeLeft}s`;
 
     if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      feedbackEl.textContent = "Time's up!";
-      showResults();
-      timeLeft = 30;
+      showResults(true);
     }
   }, 1000);
 }
@@ -87,28 +93,33 @@ function renderQuestion(question, number) {
 }
 
 startButtonEl.addEventListener('click', () => {
-  dialogEl.showModal();  
-  dialogConfirmEl.addEventListener('click', () => {
+  dialogEl.showModal();
+});
+
+dialogConfirmEl.addEventListener('click', () => {
   dialogEl.close();                    // close the dialog
   startScreenEl.hidden = true;         // hide start screen
   questionScreenEl.hidden = false;     // show question screen
   renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
+  questionNumberEl.focus();            // start reading at the question
   startTimer();                        // global timer begins!
 });
 
 dialogCancelEl.addEventListener('click', () => {
   dialogEl.close(); // just dismiss, start screen stays visible
 });
-});
+
 quizFormEl.addEventListener('submit', (event) => {
   event.preventDefault();
-  
-if (!quizFormEl.checkValidity()) {
+  if (answered) return; // this question was already scored
+
+  if (!quizFormEl.checkValidity()) {
     feedbackEl.textContent = "Please select an answer!";
-  return;
-}  
+    return;
+  }
+
   const formData = new FormData(quizFormEl);
-   const selected = Number(formData.get('answer'));
+  const selected = Number(formData.get('answer'));
 
   const correct = questions[currentQuestionIndex].answerIndex;
 
@@ -119,13 +130,23 @@ if (!quizFormEl.checkValidity()) {
     feedbackEl.textContent = "Incorrect.";
   }
 
+  answered = true;
+  answerChoicesEl.querySelectorAll('input').forEach((input) => {
+    input.disabled = true;             // lock the choices
+  });
+
   nextButtonEl.hidden = false;
+  submitEl.hidden = true;
+  nextButtonEl.focus();
 });
+
 nextButtonEl.addEventListener('click', () => {
   currentQuestionIndex++;
 
   feedbackEl.textContent = '';
   nextButtonEl.hidden = true;
+  answered = false;
+
   quizFormEl.reset();
 
   if (currentQuestionIndex < questions.length) {
@@ -133,18 +154,25 @@ nextButtonEl.addEventListener('click', () => {
       questions[currentQuestionIndex],
       currentQuestionIndex + 1
     );
+    submitEl.hidden = false;
+    questionNumberEl.focus();
   } else {
     showResults();
   }
 });
-function showResults() {
+
+function showResults(timedOut = false) {
+  clearInterval(timerInterval);        // stop the countdown
   questionScreenEl.hidden = true;
 
   const resultsScreenEl = document.getElementById('results-screen');
   resultsScreenEl.hidden = false;
 
   const finalScoreEl = document.getElementById('final-score');
-  finalScoreEl.textContent = `You scored ${score} out of ${questions.length}!`;
+  const prefix = timedOut ? "Time's up! " : "";
+  finalScoreEl.textContent = `${prefix}You scored ${score} out of ${questions.length}!`;
+  finalScoreEl.tabIndex = -1;
+  finalScoreEl.focus();                // read the score right away
 }
 const restartButtonEl = document.getElementById('restart-button');
 
@@ -154,8 +182,13 @@ restartButtonEl.addEventListener('click', () => {
 
   score = 0;
   currentQuestionIndex = 0;
+  answered = false;
 
-  questionScreenEl.hidden = false;
-  renderQuestion(questions[currentQuestionIndex], currentQuestionIndex + 1);
-startTimer();
+  feedbackEl.textContent = '';
+  nextButtonEl.hidden = true;
+  submitEl.hidden = false;
+  quizFormEl.reset();
+
+  startScreenEl.hidden = false;
+  startButtonEl.focus();
 });
